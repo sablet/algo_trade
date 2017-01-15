@@ -1,0 +1,12 @@
+# main
+pandas_datareader
+mypy-lang
+
+# test
+pytest
+pytest-timeout
+mypy-lang
+typed-ast
+
+# utility
+ipython

@@ -1,6 +1,9 @@
 # main
+numpy
+pandas
 pandas_datareader
-mypy-lang
+tensorflow-gpu
+keras
 
 # test
 pytest

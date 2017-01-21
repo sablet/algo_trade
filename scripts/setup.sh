@@ -3,7 +3,8 @@
 # source $HOME/anaconda3/bin/activate
 cd /home/nikke/git_dir/python/algo_trade/
 pip install -r requirements.txt
+conda install --yes mkl mkl-service
+sudo apt install -y graphviz
 
-curl
-python get_data.py
-mv sandp500.sqlite3 data
+$HOME/anaconda3/bin/python scripts/sphinx_setup.sh
+

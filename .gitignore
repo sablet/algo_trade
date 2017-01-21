@@ -8,7 +8,10 @@ virenv
 tests/data/*
 doxygen-theme
 dist
+build
 *.png
 *.csv
 *.h5
+# sandp500.h5
 *.pyc
+example_*

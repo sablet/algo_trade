@@ -59,8 +59,9 @@ def df2get_batch(df, term_dict, feature_term=6):
     # df = np.log(df.pct_change())
     df = df.pct_change()
     features = {key: np.array([df[:time][-feature_term:].values
-                 for time in df[term[0]:term[1]].index])
-                   for key, term in term_dict.items()}
+                             for time in df[term[0]:term[1]].index])
+                               for key, term in term_dict.items()}
     labels = {key: df.shift(1)[term[0]:term[1]].values
-                  for key, term in term_dict.items()}
-    return features, labels
+                            for key, term in term_dict.items()}
+    terms = {key: df[term[0]:term[1]].index for key, term in term_dict.items()}
+    return features, labels, terms

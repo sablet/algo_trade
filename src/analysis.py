@@ -6,24 +6,36 @@ from keras.optimizers import RMSprop
 import numpy as np
 import os
 import matplotlib.pyplot as plt
+import pandas as pd
+from scipy.stats import gmean
+from traceback import extract_stack
 
 
 class LearningSequence:
     """
-    DataFrame predict evaluate
+    predict and evaluate from features amd label dict
     """
-    def __init__(self, features, labels, model_path=None):
-        self.outpath = lambda path: os.path.join("exp_outcome", path)
+    def __init__(self, features, labels, terms, model_path=None):
+        """
+        predict and evaluate from features amd labels
+        :param features: dict
+        :param labels: dict
+        :param model_path: str
+        """
+        for asserted_value in [features, labels, terms]:
+            assert set(asserted_value.keys()) == {'train', 'valid', 'test'}
         self.features = features
         self.labels = labels
+        self.terms = terms
+        self.outpath = lambda path: os.path.join("exp_outcome", path)
         if model_path is not None:
             assert os.path.exists(model_path)
             self.model = load_model(model_path)
 
     def sturcts_layer(self, topology_arr):
         """
-        structs Feed Forward Neural Network
-        param: topology_arr: List
+        structs Neural Network Layer and display summary
+        param: topology_arr: list
         """
         n_data, n_feature, n_kinds = self.features['train'].shape
         self.model = Sequential()
@@ -35,24 +47,79 @@ class LearningSequence:
             )
         self.model.summary()
 
-    def inference(self, nb_epoch=10000, verbose=0, save=False):
+    def inference(self, nb_epoch=1000, verbose=0, save=True):
+        """
+        fitting parameter and get inference values
+        :param nb_epoch: int
+        :param verbose: int
+        :param save: Bool
+        """
         print("inference...")
-        history = self.model.fit(
-            self.features['train'],
-            self.labels['train'],
-            batch_size=len(self.features['train']),
-            nb_epoch=nb_epoch,
-            verbose=verbose,
-            validation_data=(self.features['valid'], self.labels['valid'])
-        )
-        for score in history.history.values():
-            plt.plot(np.array(score))
-        plt.savefig(self.outpath("learning_curve.png"))
+        self.history = self.model.fit(
+                self.features['train'],
+                self.labels['train'],
+                batch_size=len(self.features['train']),
+                nb_epoch=nb_epoch,
+                verbose=verbose,
+                validation_data=(self.features['valid'], self.labels['valid'])
+                )
+        self.predicted_labels = {key: self.model.predict(
+            self.features[key], verbose=0
+        )for key in self.features.keys()}
 
-        self.learned_label = self.model.predict(self.features['test'], verbose=0)
         if save is True:
             self.model.save(self.outpath("keras_model.h5"))
 
-    def eval_accuracy(self):
-        pass
+    def _save_png(self, save):
+        """
+        plot and save template
+        :param save: bool
+        :rtype: None
+        """
+        if save is True:
+            plt.savefig(self.outpath(
+                extract_stack()[-2][-2].replace("plot_", "") + ".png"))
 
+    def plot_learning_curve(self, later=None, save=False):
+        """
+        get learning curve and plot
+        :param save:
+        :return: None
+        """
+        pd.DataFrame.from_dict(self.history.history).plot()
+        self._save_png(save)
+        if type(later) is int:
+            pd.DataFrame.from_dict(self.history.history)[
+            (len(self.history.history) / 2):].plot()
+            self._save_png(save)
+
+    def plot_direction_accuracy(self, data_key='valid', save=False):
+        """
+        evaluate predicted direction accuracy and plot
+        :param data_key: str: valid or test
+        :param save: bool
+        :rtype: None
+        """
+        accuracy = (self.labels[data_key] * self.predicted_labels[data_key] > 0)
+        print("whole accuracy is {}".format(round(float(accuracy.mean(axis=None)), 3)))
+        plt.hist(accuracy.mean(axis=1), bins=100)
+        self._save_png(save)
+
+    def plot_profit(self, data_key='valid', kinds='portfolio', save=False):
+        """
+        evaluate profit time series and plot
+        :param data_key: str
+        :param save: Bool
+        :rtype: None
+        """
+        profit = np.sign(self.predicted_labels[data_key][1:])\
+                        * self.labels[data_key][1:] + 1
+        print("whole profit ration is {}".format(np.around(
+            gmean(profit, axis=None), 3
+        )))
+        if kinds is 'portfolio':
+            pd.DataFrame(
+                np.multiply.accumulate(profit.mean(axis=1)),
+                index=self.terms[data_key][1:]
+                ).plot()
+        self._save_png(save)

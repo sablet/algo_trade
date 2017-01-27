@@ -4,7 +4,6 @@ pandas
 pandas_datareader
 # tensorflow-gpu
 keras
-matplotlib
 
 # test
 pytest
@@ -14,11 +13,10 @@ typed-ast
 
 # evaluate
 pydot
+matplotlib
+seaborn
+scipy
+statsmodels
 
 # utility
 ipython
-
-# documentation
-mkdocs
-mkdocs-bootswatch
-

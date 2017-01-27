@@ -12,6 +12,5 @@ build
 *.png
 *.csv
 *.h5
-# sandp500.h5
 *.pyc
-example_*
+log

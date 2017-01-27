@@ -1,0 +1,24 @@
+# main
+numpy
+pandas
+pandas_datareader
+# tensorflow-gpu
+keras
+matplotlib
+
+# test
+pytest
+pytest-timeout
+mypy-lang
+typed-ast
+
+# evaluate
+pydot
+
+# utility
+ipython
+
+# documentation
+mkdocs
+mkdocs-bootswatch
+

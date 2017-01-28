@@ -7,20 +7,25 @@ import os
 import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
+import json
+
+URL_JSON = 'urllists.json'
 
 
-def urls2list(url=None, key="Symbol", kinds='sandp'):
+def urls2list(url=None, key="Symbol", kinds='sandp500'):
     """
     SandP 500 csv get and collect list
+    :param kinds: str
     :param url: str
     :param key: str
     :return: list
     """
-    if url is None:
-        if kinds is 'sandp':
-            url = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/master/data/constituents.csv"
-    return [item[key] for item
-            in csv.DictReader(requests.get(url).text.splitlines())]
+    with open(URL_JSON) as f:
+        json_dic = json.load(f)
+    if url is None and kinds in json_dic.keys():
+        url = json_dic[kinds]
+    return [item[key] for item in csv.DictReader(
+        requests.get(url).text.splitlines())]
 
 
 def symbols2daily_values(out_fpath='sandp500.h5', key='SandP'):

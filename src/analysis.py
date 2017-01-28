@@ -1,7 +1,7 @@
 from __future__ import print_function
 from keras.models import Sequential, load_model
 # from keras.layers.core import Dense
-from keras.layers import LSTM, Conv1D
+from keras.layers import LSTM, Conv2D
 from keras.optimizers import RMSprop
 import numpy as np
 import os
@@ -43,11 +43,12 @@ class LearningSequence:
         """
         n_data, n_feature, n_kinds = self.features['train'].shape
         self.model = Sequential()
-        self.model.add(Conv1D(
-            n_kinds,
+        self.model.add(Conv2D(
             topology_arr[0],
+            topology_arr[1],
+            topology_arr[2],
             activation='relu',
-            input_shape=(n_feature, n_kinds)
+            input_shape=(None, n_feature, n_kinds)
         ))
         self.model.add(LSTM(n_kinds))
         self.model.compile(

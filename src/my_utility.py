@@ -9,16 +9,21 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 
 
-def urls2list(url=None, key="Symbol", kinds='sandp'):
+json = {
+    'sandp500': "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/master/data/constituents.csv"
+}
+
+
+def urls2list(url=None, key="Symbol", kinds='sandp500'):
     """
     SandP 500 csv get and collect list
+    :param kinds: str
     :param url: str
     :param key: str
     :return: list
     """
-    if url is None:
-        if kinds is 'sandp':
-            url = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/master/data/constituents.csv"
+    if url is None and kinds in json.keys():
+        url = json[kinds]
     return [item[key] for item
             in csv.DictReader(requests.get(url).text.splitlines())]
 

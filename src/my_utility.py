@@ -5,8 +5,6 @@ import requests
 import pandas
 import os
 import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 import json
 
 URL_JSON = 'urllists.json'
@@ -56,22 +54,6 @@ def np1(arr):
     assert False
 
 
-def double_plot(matplot1, matplot2):
-    plt.figure(figsize=(12, 4))
-    plt.subplot(1, 2, 1)
-    matplot1()
-    plt.subplot(1, 2, 2)
-    matplot2()
-
-
-def box_and_dist_plot(arr):
-    arr = np1(arr)
-    double_plot(
-        (lambda: sns.distplot(arr))(),
-        (lambda: sns.boxplot(arr))(),
-    )
-
-
 def daily_values2filtered(pd_panel, key='Adj Close'):
     """
     daily value filtering(key, drop Nan, Change rate
@@ -90,8 +72,6 @@ def df2get_batch(df, term_dict, feature_term=6):
     :param feature_term: int
     :return: numpy.ndarray
     """
-    # df = np.log(df.pct_change())
-    df = df.pct_change()
     features = {key: np.array([df[:time][-feature_term:].values
                              for time in df[term[0]:term[1]].index])
                                for key, term in term_dict.items()}

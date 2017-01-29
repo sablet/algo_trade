@@ -1,0 +1,5 @@
+{
+  "sandp500": "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/master/data/constituents.csv",
+  "nasdaq": "http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NASDAQ&render=download",
+  "nyse": "http://www.nasdaq.com/screening/companies-by-industry.aspx?exchange=NYSE&render=download"
+}

@@ -5,37 +5,71 @@ import requests
 import pandas
 import os
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+import json
+
+URL_JSON = 'urllists.json'
 
 
-def sandp_url2symbols(url=None, key="Symbol"):
+def urls2list(url=None, key=None, kind='sandp500'):
     """
     SandP 500 csv get and collect list
+    :param kind: str
     :param url: str
     :param key: str
     :return: list
     """
-    if url is None:
-        url = "https://raw.githubusercontent.com/datasets/s-and-p-500-companies/master/data/constituents.csv"
-    return [item[key] for item
-            in csv.DictReader(requests.get(url).text.splitlines())]
+    with open(URL_JSON) as f:
+        json_dic = json.load(f)
+    if url is None and kind in json_dic.keys():
+        url = json_dic[kind]
+    if key is None:
+        return [item for item in csv.DictReader(
+             requests.get(url).text.splitlines())]
+    else:
+        return [item[key] for item in csv.DictReader(
+             requests.get(url).text.splitlines())]
 
 
-def symbols2daily_values(out_fpath='sandp500.h5', key='SandP'):
+def symbols2daily_values(kinds='sandp500'):
     """
     return S&P500 stocks daily values during 2010/1/1~2017/1/15
-    :param out_fpath: str
-    :param key: str
+    :param kinds: str
     :return: pandas.Pane;
     """
+    out_fpath = kinds + '.h5'
     if os.path.exists(out_fpath):
         return pandas.read_hdf(out_fpath)
     else:
-        name, ext = out_fpath.split('.')
-        # default 2010/1/1 ~ today
         print("data collecting...")
-        data = web.DataReader(sandp_url2symbols(), 'yahoo')
-        data.to_hdf(out_fpath, key)
+        data = web.DataReader(urls2list(key='Symbol'), 'yahoo')
+        data.to_hdf(out_fpath, kinds)
         return data
+
+
+def np1(arr):
+    if type(arr) in [pandas.Series, pandas.DataFrame, pandas.Panel]:
+        return arr.values.reshape(np.prod(arr.values.shape))
+    elif type(arr) is np.ndarray:
+        return arr.reshape(np.prod(arr.shape))
+    assert False
+
+
+def double_plot(matplot1, matplot2):
+    plt.figure(figsize=(12, 4))
+    plt.subplot(1, 2, 1)
+    matplot1()
+    plt.subplot(1, 2, 2)
+    matplot2()
+
+
+def box_and_dist_plot(arr):
+    arr = np1(arr)
+    double_plot(
+        (lambda: sns.distplot(arr))(),
+        (lambda: sns.boxplot(arr))(),
+    )
 
 
 def daily_values2filtered(pd_panel, key='Adj Close'):

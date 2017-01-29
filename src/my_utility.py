@@ -8,7 +8,6 @@ import numpy as np
 import seaborn as sns
 import matplotlib.pyplot as plt
 import json
-import collections
 
 URL_JSON = 'urllists.json'
 
@@ -33,21 +32,19 @@ def urls2list(url=None, key=None, kind='sandp500'):
              requests.get(url).text.splitlines())]
 
 
-def symbols2daily_values(out_fpath='sandp500.h5', key='SandP'):
+def symbols2daily_values(kinds='sandp500'):
     """
     return S&P500 stocks daily values during 2010/1/1~2017/1/15
-    :param out_fpath: str
-    :param key: str
+    :param kinds: str
     :return: pandas.Pane;
     """
+    out_fpath = kinds + '.h5'
     if os.path.exists(out_fpath):
         return pandas.read_hdf(out_fpath)
     else:
-        name, ext = out_fpath.split('.')
-        # default 2010/1/1 ~ today
         print("data collecting...")
         data = web.DataReader(urls2list(key='Symbol'), 'yahoo')
-        data.to_hdf(out_fpath, key)
+        data.to_hdf(out_fpath, kinds)
         return data
 
 
@@ -59,13 +56,20 @@ def np1(arr):
     assert False
 
 
-def double_plot(arr):
-    arr = np1(arr)
+def double_plot(matplot1, matplot2):
     plt.figure(figsize=(12, 4))
     plt.subplot(1, 2, 1)
-    sns.distplot(arr)
+    matplot1()
     plt.subplot(1, 2, 2)
-    sns.boxplot(arr)
+    matplot2()
+
+
+def box_and_dist_plot(arr):
+    arr = np1(arr)
+    double_plot(
+        (lambda: sns.distplot(arr))(),
+        (lambda: sns.boxplot(arr))(),
+    )
 
 
 def daily_values2filtered(pd_panel, key='Adj Close'):

@@ -2,7 +2,7 @@ from __future__ import print_function
 import os
 
 from src.plot_and_evaluate import PlotAndEvaluate
-from src.npmove import np3to2
+from src.shape_utility import np3to2
 from keras.layers import LSTM, Conv1D
 from keras.models import Sequential, load_model
 from keras.optimizers import RMSprop
@@ -26,18 +26,27 @@ class ModelTemplate(PlotAndEvaluate):
         self.features = features
         self.predicted_labels = None
 
+    def predict_all(self, verbose=None):
+        if verbose is None:
+            self.predicted_labels = {key: self.model.predict(
+                self.features[key]
+            ) for key in self.features.keys()}
+        else:
+            self.predicted_labels = {key: self.model.predict(
+                self.features[key], verbose=0
+            ) for key in self.features.keys()}
+
 
 class LinearModel(ModelTemplate):
-    def __init__(self, features, labels, terms, model_path=None):
+    def __init__(self, features, labels, terms):
         super().__init__(features, labels, terms)
+        for key in features.keys():
+            self.features[key] = np3to2(self.features[key])
         self.model = LinearRegression()
 
     def inference(self):
-        self.model.fit(
-            np3to2(self.features['train']),
-            self.labels['train']
-        )
-        self.predicted_labels = self.model.predict(np3to2(self.features['valid']))
+        self.model.fit(self.features['train'], self.labels['train'])
+        self.predict_all()
 
 
 class CnnModel(ModelTemplate):
@@ -90,9 +99,6 @@ class CnnModel(ModelTemplate):
             verbose=verbose,
             validation_data=(self.features['valid'], self.labels['valid'])
         )
-        self.predicted_labels = {key: self.model.predict(
-            self.features[key], verbose=0
-        ) for key in self.features.keys()}
-
+        self.predict_all()
         if save is True:
             self.model.save(self.outpath("keras_model.h5"))

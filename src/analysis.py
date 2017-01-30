@@ -1,33 +1,51 @@
 from __future__ import print_function
-from keras.models import Sequential, load_model
-# from keras.layers.core import Dense
-from keras.layers import LSTM, Conv1D
-from keras.optimizers import RMSprop
-import numpy as np
 import os
-import matplotlib.pyplot as plt
-import pandas as pd
-from scipy.stats import gmean
-from traceback import extract_stack
+
+from src.plot_and_evaluate import PlotAndEvaluate
+from src.npmove import np3to2
+from keras.layers import LSTM, Conv1D
+from keras.models import Sequential, load_model
+from keras.optimizers import RMSprop
+from sklearn.linear_model import LinearRegression
 
 
-class LearningSequence:
+class ModelTemplate(PlotAndEvaluate):
     """
-    predict and evaluate from features amd label dict
+    predict by linear model
     """
-
-    def __init__(self, features, labels, terms, model_path=None):
+    def __init__(self, features, labels, terms):
         """
         predict and evaluate from features amd labels
         :param features: dict
         :param labels: dict
-        :param model_path: str
         """
         for asserted_value in [features, labels, terms]:
             assert set(asserted_value.keys()) == {'train', 'valid', 'test'}
-        self.features = features
-        self.labels = labels
         self.terms = terms
+        self.labels = labels
+        self.features = features
+        self.predicted_labels = None
+
+
+class LinearModel(ModelTemplate):
+    def __init__(self, features, labels, terms, model_path=None):
+        super().__init__(features, labels, terms)
+        self.model = LinearRegression()
+
+    def inference(self):
+        self.model.fit(
+            np3to2(self.features['train']),
+            self.labels['train']
+        )
+        self.predicted_labels = self.model.predict(np3to2(self.features['valid']))
+
+
+class CnnModel(ModelTemplate):
+    """
+    predict and evaluate from features amd label dict
+    """
+    def __init__(self, features, labels, terms, model_path=None):
+        super().__init__(features, labels, terms)
         os.makedirs('log', exist_ok=True)
         self.outpath = lambda path: os.path.join('log', path)
         if model_path is not None:
@@ -78,60 +96,3 @@ class LearningSequence:
 
         if save is True:
             self.model.save(self.outpath("keras_model.h5"))
-
-    def _save_png(self, save):
-        """
-        plot and save template
-        :param save: bool
-        :rtype: None
-        """
-        if save is True:
-            plt.savefig(self.outpath(
-                extract_stack()[-2][-2].replace("plot_", "") + ".png"))
-
-    def plot_learning_curve(self, later=0, save=False):
-        """
-        get learning curve and plot
-        axis=0: time sries index
-        axis=1: enterprise kinds index
-        :param later: int
-        :param save:
-        :return: None
-        """
-        if type(later) is int:
-            pd.DataFrame.from_dict(self.history.history)[
-            (len(self.history.history) // 2):].plot()
-            self._save_png(save)
-
-    def plot_direction_accuracy(self, data_key='valid', save=False):
-        """
-        evaluate predicted direction accuracy and plot
-        :param data_key: str: valid or test
-        :param save: bool
-        :rtype: None
-        """
-        accuracy = (self.labels[data_key] * self.predicted_labels[data_key] > 0)
-        print("whole accuracy is {}".format(round(float(accuracy.mean(axis=None)), 3)))
-        plt.hist(accuracy.mean(axis=1), bins=20)
-        self._save_png(save)
-
-    def plot_profit(self, data_key='valid', kinds='portfolio', save=False):
-        """
-        evaluate profit time series and plot
-        :param kinds: str
-        :param data_key: str
-        :param save: Bool
-        :rtype: None
-        """
-        profit = np.sign(self.predicted_labels[data_key][1:]) \
-                 * self.labels[data_key][1:] + 1
-        print("whole profit ration is {}".format(np.around(
-            gmean(profit, axis=None), 3
-        )))
-        if kinds is 'portfolio':
-            pd.DataFrame(
-                np.multiply.accumulate(profit.mean(axis=1)),
-                index=self.terms[data_key][1:],
-                columns=[kinds]
-            ).plot()
-        self._save_png(save)

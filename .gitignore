@@ -14,3 +14,5 @@ build
 *.h5
 *.pyc
 log
+*.pdf
+testkernel

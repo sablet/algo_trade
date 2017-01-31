@@ -50,15 +50,15 @@ class PlotAndEvaluate(object):
         :param save: Bool
         :rtype: None
         """
-        profit = np.sign(self.predicted_labels[data_key][1:]) \
-                            * self.labels[data_key][1:] + 1
+        profit = (np.e ** self.labels[data_key][1:]) ** np.sign(
+            self.predicted_labels[data_key][1:])
         print("whole profit ration is {}".format(np.around(
-            gmean(profit, axis=None), 3
+            gmean(profit, axis=None), 5
         )))
         if kinds is 'portfolio':
             pd.DataFrame(
                 np.multiply.accumulate(profit.mean(axis=1)),
                 index=self.terms[data_key][1:],
                 columns=[kinds]
-            ).plot()
+                ).plot()
         self._save_png(save)

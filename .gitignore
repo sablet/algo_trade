@@ -16,3 +16,4 @@ build
 log
 *.pdf
 testkernel
+tmp_*

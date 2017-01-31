@@ -2,6 +2,7 @@
 numpy
 pandas
 pandas_datareader
+sklearn
 # tensorflow-gpu
 keras
 
@@ -16,7 +17,6 @@ pydot
 matplotlib
 seaborn
 scipy
-statsmodels
 
 # utility
 ipython

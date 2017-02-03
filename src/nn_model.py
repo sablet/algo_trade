@@ -1,52 +1,9 @@
 from __future__ import print_function
 import os
-
-from src.plot_and_evaluate import PlotAndEvaluate
-from src.shape_utility import np3to2
 from keras.layers import LSTM, Conv1D
 from keras.models import Sequential, load_model
 from keras.optimizers import RMSprop
-from sklearn.linear_model import LinearRegression
-
-
-class ModelTemplate(PlotAndEvaluate):
-    """
-    predict by linear model
-    """
-    def __init__(self, features, labels, terms):
-        """
-        predict and evaluate from features amd labels
-        :param features: dict
-        :param labels: dict
-        """
-        for asserted_value in [features, labels, terms]:
-            assert set(asserted_value.keys()) == {'train', 'valid', 'test'}
-        self.terms = terms
-        self.labels = labels
-        self.features = features
-        self.predicted_labels = None
-
-    def predict_all(self, verbose=None):
-        if verbose is None:
-            self.predicted_labels = {key: self.model.predict(
-                self.features[key]
-            ) for key in self.features.keys()}
-        else:
-            self.predicted_labels = {key: self.model.predict(
-                self.features[key], verbose=0
-            ) for key in self.features.keys()}
-
-
-class LinearModel(ModelTemplate):
-    def __init__(self, features, labels, terms):
-        super().__init__(features, labels, terms)
-        for key in features.keys():
-            self.features[key] = np3to2(self.features[key])
-        self.model = LinearRegression()
-
-    def inference(self):
-        self.model.fit(self.features['train'], self.labels['train'])
-        self.predict_all()
+from src.model_template import ModelTemplate
 
 
 class CnnModel(ModelTemplate):

@@ -29,6 +29,7 @@ class PyTest(test_command):
 
 version = '0.1.0'
 
+
 # setup.py内でpytestのimportが必要
 setup_requires = [
     'pytest'
@@ -44,7 +45,6 @@ setup(
     setup_requires=setup_requires,
     ## install_requires=install_requires,
     tests_require=tests_require,
-    # 'test'を「Pytestを実行するコマンド」と紐付ける
     cmdclass={'test': PyTest},
     test_suite='test'
 )

@@ -28,9 +28,10 @@ def urls2list(url=None, key=None, kind='sandp500'):
             requests.get(url).text.splitlines())]
 
 
-def symbols2daily_values(kinds='sandp500'):
+def symbols2daily_values(kinds='sandp500', symbols=None):
     """
     return S&P500 stocks daily values during 2010/1/1~2017/1/15
+    :param symbols: List[str]
     :param kinds: str
     :return: pandas.Pane
     """
@@ -39,6 +40,8 @@ def symbols2daily_values(kinds='sandp500'):
         return pandas.read_hdf(out_fpath)
     else:
         print("data collecting...")
-        data = web.DataReader(urls2list(key='Symbol'), 'yahoo')
+        if symbols is None:
+            symbols = urls2list(key='Symbol')
+        data = web.DataReader(symbols, 'yahoo')
         data.to_hdf(out_fpath, kinds)
         return data

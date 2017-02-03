@@ -50,15 +50,43 @@ class PlotAndEvaluate(object):
         :param save: Bool
         :rtype: None
         """
-        profit = np.sign(self.predicted_labels[data_key][1:]) \
-                            * self.labels[data_key][1:] + 1
+        profit = (np.e ** self.labels[data_key][1:]) ** np.sign(
+            self.predicted_labels[data_key][1:])
         print("whole profit ration is {}".format(np.around(
-            gmean(profit, axis=None), 3
+            gmean(profit, axis=None), 5
         )))
         if kinds is 'portfolio':
             pd.DataFrame(
                 np.multiply.accumulate(profit.mean(axis=1)),
                 index=self.terms[data_key][1:],
                 columns=[kinds]
-            ).plot()
+                ).plot()
         self._save_png(save)
+
+
+class ModelTemplate(PlotAndEvaluate):
+    """
+    predict by linear model
+    """
+    def __init__(self, features, labels, terms):
+        """
+        predict and evaluate from features amd labels
+        :param features: dict
+        :param labels: dict
+        """
+        for asserted_value in [features, labels, terms]:
+            assert set(asserted_value.keys()) == {'train', 'valid', 'test'}
+        self.terms = terms
+        self.labels = labels
+        self.features = features
+        self.predicted_labels = None
+
+    def predict_all(self, verbose=None):
+        if verbose is None:
+            self.predicted_labels = {key: self.model.predict(
+                self.features[key]
+            ) for key in self.features.keys()}
+        else:
+            self.predicted_labels = {key: self.model.predict(
+                self.features[key], verbose=0
+            ) for key in self.features.keys()}

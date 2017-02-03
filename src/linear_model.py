@@ -5,17 +5,13 @@ from src.shape_utility import np3to2
 
 
 class LinearModel(ModelTemplate):
-    def __init__(self, features, labels, terms, kinds='linear'):
+    def __init__(self, features, labels, terms):
         super().__init__(features, labels, terms)
         for key in self.features.keys():
             self.features[key] = np3to2(self.features[key])
-        if kinds is 'linear':
-            self.model = LinearRegression()
-        elif kinds is 'svm':
-            self.model = SVR(C=1.0, epsilon=0.1)
-        else:
-            assert False
-
+        self.model = LinearRegression()
+    
     def inference(self):
+        pytest.set_trace()
         self.model.fit(self.features['train'], self.labels['train'])
         self.predict_all()

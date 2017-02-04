@@ -20,18 +20,19 @@ def test_getdata():
     return features, labels, terms
 
 
-@pytest.mark.skip('time loss')
+# @pytest.mark.skip('time loss')
 def test_linear(test_getdata):
     d1, d2, t = test_getdata
     l1 = linear_model.LinearModel(d1, d2, t)
     assert len(l1.features['train'].shape) == 2
     l1.inference()
-    l1.plot_direction_accuracy()
+    l1.plot_direction_accuracy(save=True)
     # plt.show()
-    l1.plot_profit()
+    l1.plot_profit(save=True)
     # plt.show()
 
 
+@pytest.mark.skip('progress')
 def test_ffnn(test_getdata):
     d1, d2, t = test_getdata
     l1 = linear_model.LinearModel(d1, d2, t)

@@ -17,3 +17,5 @@ log
 *.pdf
 testkernel
 tmp_*
+doc
+

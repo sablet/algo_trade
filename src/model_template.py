@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.stats import gmean
+from src.utility import get_out_path
 
 
 class PlotAndEvaluate(object):
@@ -13,8 +14,10 @@ class PlotAndEvaluate(object):
         :rtype: None
         """
         if save is True:
-            plt.savefig(self.outpath(
-                extract_stack()[-2][-2].replace("plot_", "") + ".png"))
+            plt.savefig(
+                get_out_path(
+                    extract_stack()[-2][-2].replace("plot_", "") + ".png"
+                ))
 
     def plot_learning_curve(self, later=0, save=False):
         """

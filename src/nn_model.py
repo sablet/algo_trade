@@ -4,7 +4,7 @@ from keras.layers import LSTM, Conv1D
 from keras.models import Sequential, load_model
 from keras.optimizers import RMSprop
 from src.model_template import ModelTemplate
-
+from src.utility import get_out_path
 
 class CnnModel(ModelTemplate):
     """
@@ -12,8 +12,6 @@ class CnnModel(ModelTemplate):
     """
     def __init__(self, features, labels, terms, model_path=None):
         super().__init__(features, labels, terms)
-        os.makedirs('log', exist_ok=True)
-        self.outpath = lambda path: os.path.join('log', path)
         if model_path is not None:
             assert os.path.exists(model_path)
             self.model = load_model(model_path)
@@ -58,4 +56,4 @@ class CnnModel(ModelTemplate):
         )
         self.predict_all()
         if save is True:
-            self.model.save(self.outpath("keras_model.h5"))
+            self.model.save(get_out_path("keras_model.h5"))

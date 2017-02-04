@@ -1,7 +1,7 @@
 from sklearn.linear_model import LinearRegression
 from sklearn.svm import SVR
 from src.model_template import ModelTemplate
-from src.shape_utility import np3to2
+from src.utility import np3to2
 
 
 class LinearModel(ModelTemplate):
@@ -12,6 +12,5 @@ class LinearModel(ModelTemplate):
         self.model = LinearRegression()
     
     def inference(self):
-        pytest.set_trace()
         self.model.fit(self.features['train'], self.labels['train'])
         self.predict_all()

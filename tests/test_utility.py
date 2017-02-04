@@ -1,10 +1,9 @@
 import numpy as np
-from src.shape_utility import np1, np3to2
+from src.utility import np1, np3to2
 from numpy.testing import assert_almost_equal
 
 
 def test_np1():
-    np1(np.array([[1, 2, 3], [4, 5, 6]]))
     assert_almost_equal(
         np1(np.array([[1, 2, 3], [4, 5, 6]])),
         np.arange(1, 7)

@@ -4,6 +4,7 @@ import os
 import pandas
 import requests
 from pandas_datareader import data as web
+from src.utility import get_out_path
 
 URL_JSON = 'urllists.json'
 
@@ -16,7 +17,7 @@ def urls2list(url=None, key=None, kind='sandp500'):
     :param key: str
     :return: list
     """
-    with open(URL_JSON) as f:
+    with open(get_out_path(URL_JSON)) as f:
         json_dic = json.load(f)
     if url is None and kind in json_dic.keys():
         url = json_dic[kind]
@@ -35,13 +36,13 @@ def symbols2daily_values(kinds='sandp500', symbols=None):
     :param kinds: str
     :return: pandas.Pane
     """
-    out_fpath = kinds + '.h5'
-    if os.path.exists(out_fpath):
-        return pandas.read_hdf(out_fpath)
+    out_path = get_out_path(kinds + '.h5')
+    if os.path.exists(out_path):
+        return pandas.read_hdf(out_path)
     else:
         print("data collecting...")
         if symbols is None:
             symbols = urls2list(key='Symbol')
         data = web.DataReader(symbols, 'yahoo')
-        data.to_hdf(out_fpath, kinds)
+        data.to_hdf(out_path, kinds)
         return data

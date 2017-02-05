@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 from scipy.stats import gmean
+from src.utility import get_out_path, np3to2
 
 
 class PlotAndEvaluate(object):
@@ -13,8 +14,10 @@ class PlotAndEvaluate(object):
         :rtype: None
         """
         if save is True:
-            plt.savefig(self.outpath(
-                extract_stack()[-2][-2].replace("plot_", "") + ".png"))
+            plt.savefig(
+                get_out_path(
+                    extract_stack()[-2][-2].replace("plot_", "") + ".png"
+                ))
 
     def plot_learning_curve(self, later=0, save=False):
         """
@@ -68,7 +71,7 @@ class ModelTemplate(PlotAndEvaluate):
     """
     predict by linear model
     """
-    def __init__(self, features, labels, terms):
+    def __init__(self, features, labels, terms, feature_1dim=False):
         """
         predict and evaluate from features amd labels
         :param features: dict
@@ -80,6 +83,9 @@ class ModelTemplate(PlotAndEvaluate):
         self.labels = labels
         self.features = features
         self.predicted_labels = None
+        if feature_1dim is True:
+            for key in self.features.keys():
+                self.features[key] = np3to2(self.features[key])
 
     def predict_all(self, verbose=None):
         if verbose is None:

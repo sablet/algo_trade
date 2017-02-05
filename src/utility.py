@@ -1,5 +1,7 @@
 import numpy as np
 import pandas
+import os
+import subprocess
 
 
 def np1(arr):
@@ -15,3 +17,19 @@ def np3to2(arr):
         shape = arr.shape
         return arr.reshape(shape[0], shape[1] * shape[2])
     assert False
+
+
+def get_root():
+    return subprocess.getoutput("git rev-parse --show-toplevel")
+
+
+def move2root():
+    return os.chdir(get_root())
+
+
+def get_out_path(file_name, dname='data'):
+    os.makedirs(
+        os.path.join(get_root(), dname),
+        exist_ok=True
+    )
+    return os.path.join(get_root(), dname, file_name)

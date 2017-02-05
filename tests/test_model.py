@@ -1,6 +1,7 @@
 import pytest
 from src import get_data, linear_model, preprocess, nn_model
 import matplotlib.pyplot as plt
+NN_TYPE = nn_model.NN_TYPE
 
 
 @pytest.fixture()
@@ -20,26 +21,34 @@ def test_getdata():
     return features, labels, terms
 
 
-@pytest.mark.skip('time loss')
+# @pytest.mark.skip('time loss')
 def test_linear(test_getdata):
     d1, d2, t = test_getdata
     l1 = linear_model.LinearModel(d1, d2, t)
     assert len(l1.features['train'].shape) == 2
     l1.inference()
     l1.plot_direction_accuracy(save=True)
-    # plt.show()
     l1.plot_profit(save=True)
-    # plt.show()
 
 
-@pytest.mark.skip('progress')
+# @pytest.mark.skip()
 def test_ffnn(test_getdata):
     d1, d2, t = test_getdata
-    l1 = nn_model.NnModel(d1, d2, t, kinds='FFNN')
+    l1 = nn_model.NnModel(d1, d2, t, kinds=NN_TYPE[0])
     l1.layer_stack([3, 5])
     l1.inference()
     l1.plot_learning_curve(save=True)
     l1.plot_direction_accuracy(save=True)
-    # plt.show()
     l1.plot_profit(save=True)
-    # plt.show()
+
+
+# fail test
+@pytest.mark.skip()
+def test_lstm(test_getdata):
+    d1, d2, t = test_getdata
+    l1 = nn_model.NnModel(d1, d2, t, kinds=NN_TYPE[1])
+    l1.layer_stack([3, 5])
+    l1.inference()
+    l1.plot_learning_curve(save=True)
+    l1.plot_direction_accuracy(save=True)
+    l1.plot_profit(save=True)

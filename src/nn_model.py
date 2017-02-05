@@ -6,18 +6,19 @@ from keras.models import Sequential, load_model
 from keras.optimizers import RMSprop
 from src.model_template import ModelTemplate
 from src.utility import get_out_path, np3to2
+import pytest
 
-TYPE = ['FFNN', 'LSTM', 'CNN']
+NN_TYPE = ['FFNN', 'LSTM', 'CNN']
 
 
 class NnModel(ModelTemplate):
     """
     predict and evaluate from features amd label dict
     """
-    def __init__(self, features, labels, terms, kinds=TYPE[0], model_path=None):
-        assert kinds in TYPE
+    def __init__(self, features, labels, terms, kinds=NN_TYPE[0], model_path=None):
+        assert kinds in NN_TYPE
         self.n_data, self.n_feature, self.n_label = features['train'].shape
-        super().__init__(features, labels, terms, feature_1dim=(kinds in TYPE[:1]))
+        super().__init__(features, labels, terms, feature_1dim=(kinds in NN_TYPE[:1]))
         if model_path is not None:
             assert os.path.exists(model_path)
             self.model = load_model(model_path)
@@ -39,14 +40,27 @@ class NnModel(ModelTemplate):
         self.model.summary()
 
     def _characteristic_layer_construct(self, topology_arr):
-        if self.kinds is TYPE[0]:
-            for n_unit in topology_arr:
+        if self.kinds is NN_TYPE[0]:
+            self.model.add(Dense(
+                topology_arr[0],
+                input_dim=self.n_feature * self.n_label,
+                activation='relu'
+            ))
+            for n_unit in topology_arr[1:]:
                 self.model.add(Dense(
                     n_unit,
-                    input_dim=self.n_feature*self.n_label,
                     activation='relu'
                 ))
             self.model.add(Dense(self.n_label, activation='relu'))
+        elif self.kinds is NN_TYPE[1]:
+            self.model.add(LSTM(
+                topology_arr[0],
+                input_dim=self.n_feature * self.n_label,
+            ))
+            pytest.set_trace()
+            for n_unit in topology_arr[1:]:
+                self.model.add(LSTM(n_unit))
+            self.model.add(LSTM(self.n_label))
         else:
             assert False
 
@@ -68,4 +82,7 @@ class NnModel(ModelTemplate):
         )
         self.predict_all()
         if save is True:
-            self.model.save(get_out_path("keras_model.h5"))
+            self.model.save(
+                get_out_path(
+                    self.kinds + "_model.h5"
+                ))

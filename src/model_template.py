@@ -81,11 +81,13 @@ class ModelTemplate(PlotAndEvaluate):
             assert set(asserted_value.keys()) == {'train', 'valid', 'test'}
         self.terms = terms
         self.labels = labels
-        self.features = features
         self.predicted_labels = None
         if feature_1dim is True:
-            for key in self.features.keys():
-                self.features[key] = np3to2(self.features[key])
+            self.features = {}
+            for key in features.keys():
+                self.features[key] = np3to2(features[key])
+        else:
+            self.features = features
 
     def predict_all(self, verbose=None):
         if verbose is None:

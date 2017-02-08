@@ -3,7 +3,7 @@ import os
 from keras.layers import LSTM, Conv1D
 from keras.layers.core import Dense
 from keras.models import Sequential, load_model
-from keras.optimizers import RMSprop
+from keras.optimizers import Nadam
 from src.model_template import ModelTemplate
 from src.utility import get_out_path, np3to2
 import pytest
@@ -35,7 +35,7 @@ class NnModel(ModelTemplate):
         self._characteristic_layer_construct(topology_arr)
         self.model.compile(
             loss='mse',
-            optimizer=RMSprop(lr=0.001, rho=0.9, epsilon=1e-08, decay=0.0)
+            optimizer=Nadam()
         )
         self.model.summary()
 
@@ -51,36 +51,38 @@ class NnModel(ModelTemplate):
                     n_unit,
                     activation='relu'
                 ))
-            self.model.add(Dense(self.n_label, activation='relu'))
+            self.model.add(Dense(self.n_label))
         elif self.kinds is NN_TYPE[1]:
             self.model.add(LSTM(
                 topology_arr[0],
                 input_dim=self.n_feature * self.n_label,
             ))
-            pytest.set_trace()
             for n_unit in topology_arr[1:]:
                 self.model.add(LSTM(n_unit))
             self.model.add(LSTM(self.n_label))
         else:
             assert False
 
-    def inference(self, nb_epoch=1000, verbose=0, save=True):
+    def inference(self, nb_epoch=1000, verbose=0, save=True, batchsize=None):
         """
         fitting parameter and get inference values
+        :param batchsize: int
         :param nb_epoch: int
         :param verbose: int
         :param save: Bool
         """
+        if batchsize is None:
+            batchsize = len(self.features['train'])
         print("inference...")
         self.history = self.model.fit(
             self.features['train'],
             self.labels['train'],
-            batch_size=len(self.features['train']),
+            batch_size=batchsize,
             nb_epoch=nb_epoch,
             verbose=verbose,
             validation_data=(self.features['valid'], self.labels['valid'])
         )
-        self.predict_all()
+        self.predict_all(verbose=0)
         if save is True:
             self.model.save(
                 get_out_path(

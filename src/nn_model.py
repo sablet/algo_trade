@@ -51,13 +51,12 @@ class NnModel(ModelTemplate):
                     n_unit,
                     activation='relu'
                 ))
-            self.model.add(Dense(self.n_label, activation='relu'))
+            self.model.add(Dense(self.n_label))
         elif self.kinds is NN_TYPE[1]:
             self.model.add(LSTM(
                 topology_arr[0],
                 input_dim=self.n_feature * self.n_label,
             ))
-            pytest.set_trace()
             for n_unit in topology_arr[1:]:
                 self.model.add(LSTM(n_unit))
             self.model.add(LSTM(self.n_label))

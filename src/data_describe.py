@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
 from src.utility import np1
-from src.get_data import urls2list, symbols2daily_values
+from src.get_data import csvurls2list, symbols2daily_values
 from src.preprocess import
 
 

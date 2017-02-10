@@ -25,7 +25,7 @@ def panel2get_batch(pd_panel, term_dict, key='Adj Close', feature_term=6):
     features = {key: np.array([df[:time][-feature_term:].values
                              for time in df[term[0]:term[1]].index])
                                for key, term in term_dict.items()}
-    labels = {key: df.shift(1)[term[0]:term[1]].values
+    labels = {key: df.shift(-1)[term[0]:term[1]].values
                             for key, term in term_dict.items()}
     terms = {key: df[term[0]:term[1]].index for key, term in term_dict.items()}
     return features, labels, terms

@@ -34,6 +34,7 @@ def real_getdata():
         panel,
         term_dict,
         feature_term=6)
+    assert not labels['train'][0] in features['train']
     return features, labels, terms
 
 

@@ -52,7 +52,7 @@ def test_linear(test_getdata):
 def test_ffnn(test_getdata):
     d1, d2, t = test_getdata
     l1 = nn_model.NnModel(d1, d2, t, kinds=NN_TYPE[0])
-    l1.layer_stack([3, 5])
+    l1.setup_layer([3, 5])
     l1.inference()
     l1.plot_learning_curve(save=True)
     l1.plot_direction_accuracy(save=True)
@@ -64,7 +64,7 @@ def test_ffnn(test_getdata):
 def test_lstm(test_getdata):
     d1, d2, t = test_getdata
     l1 = nn_model.NnModel(d1, d2, t, kinds=NN_TYPE[1])
-    l1.layer_stack([3, 5])
+    l1.setup_layer([3, 5])
     l1.inference()
     l1.plot_learning_curve(save=True)
     l1.plot_direction_accuracy(save=True)
@@ -75,7 +75,7 @@ def test_lstm(test_getdata):
 def test_real_ffnn(real_getdata):
     d1, d2, t = real_getdata
     l1 = nn_model.NnModel(d1, d2, t, kinds=NN_TYPE[0])
-    l1.layer_stack([10000, 3000])
+    l1.setup_layer([10000, 3000])
     l1.inference(nb_epoch=20, batchsize=128, verbose=1)
     l1.plot_learning_curve(save=True)
     l1.plot_direction_accuracy(save=True)

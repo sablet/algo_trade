@@ -1,18 +1,18 @@
 # S&P500 predict
 
-### daily stock [Up/Down] predict by LSTM
+### daily stock [Up/Down] predict by Machine Learning
  
-* env
-    * python: 3.5.2
-    * OS: Ubuntu16.04
-    * GPU: GeForce GTX 980
 * data source   
-  * S&P500 symbols list
-    * from http://data.okfn.org/data/core/s-and-p-500-companies#data
-  * S&P500 stcoks data (from yahoo finance)
-    * daily ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close'] values
-* preprocess, analysis method are written main-process.ipynb
-* result
-  * whole direct accuracy is 0.841
-  * whole profit ration is 1.011
-
+  * America stocks (S&P500 component)
+    * symbols: http://data.okfn.org/data/core/s-and-p-500-companies#data
+    * values: yahoo finance
+  * Japan stocks (Nikkei225 component)
+    * symbols: http://swing-trade.net/nk225itiran
+    * values: yahoo finance
+  * Foreign Exchange(experimental)
+    * values: oanda
+* analysis method
+  * linear regression(for compare)
+  * feed forward network
+* usage
+  * please see jupyter notebooks (notebooks/\*)

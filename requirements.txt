@@ -20,3 +20,6 @@ scipy
 
 # utility
 ipython
+beautifulsoup4
+html5lib
+git+https://github.com/oanda/oandapy.git

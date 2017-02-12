@@ -26,7 +26,7 @@ class NnModel(ModelTemplate):
         self.history = None
         self.predicted_labels = None
 
-    def layer_stack(self, topology_arr):
+    def setup_layer(self, topology_arr):
         """
         structs Neural Network Layer and display summary
         param: topology_arr: list
@@ -63,7 +63,7 @@ class NnModel(ModelTemplate):
         else:
             assert False
 
-    def inference(self, nb_epoch=1000, verbose=0, save=True, batchsize=None):
+    def inference(self, nb_epoch=1000, verbose=0, batchsize=None, save=False):
         """
         fitting parameter and get inference values
         :param batchsize: int

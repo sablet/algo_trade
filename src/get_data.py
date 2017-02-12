@@ -6,6 +6,7 @@ import requests
 from pandas_datareader import data as web
 from src.utility import get_out_path, get_root
 from YahooJapanDataReader.io.data import DataReader
+import oandapy
 
 URL_JSON = 'urllists.json'
 
@@ -46,6 +47,7 @@ def symbols2daily_values(kinds='sandp500', symbols=None):
     """
     out_path = get_out_path(kinds + '.h5')
     if not os.path.exists(out_path):
+        # data collect dataframe & store with hdf
         if kinds is 'nikkei225':
             stock_dic = {}
             for stock_code in list(map(int, csvurls2list(kind=kinds)['コード'])):
@@ -56,15 +58,28 @@ def symbols2daily_values(kinds='sandp500', symbols=None):
                     end='2016-12-31',
                     adjust=True
                 )
-            pandas.Panel(
+            val_data = pandas.Panel(
                 {key: value.reset_index() for key, value in stock_dic.items()})\
                 .swapaxes('items', 'minor')\
                 [['Close', 'High', 'Low', 'Open', 'Volume']]\
-                .astype('float64')\
-                .to_hdf(out_path, kinds)
+                .astype('float64')
+        elif kinds is 'currency':
+            assert 'oanda_token' in os.environ
+            oanda = oandapy.API(
+                environment='practice',
+                access_token=os.environ['oanda_token']
+            )
+            data = oanda.get_history(
+                instrument='USD_JPY',
+                granularity='D',
+                count=5000
+            )
+            val_data = pandas.DataFrame(data['candles']).set_index('time')
         else:
             print("data collecting...")
             if symbols is None:
                 symbols = csvurls2list(key='Symbol')
-            web.DataReader(symbols, 'yahoo').to_hdf(out_path, kinds)
-    return pandas.read_hdf(out_path, kinds)
+            val_data = web.DataReader(symbols, 'yahoo')
+        # common sore statement
+        val_data.store(out_path, kinds)
+    return pandas.read_hdf(out_path)

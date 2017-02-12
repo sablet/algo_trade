@@ -4,10 +4,8 @@ from setuptools import setup, find_packages
 from setuptools.command.test import test as test_command
 
 
-# Pytestを実行するコマンドの実装
 class PyTest(test_command):
 
-    # pytestのオプションを指定する際は--pytest-args='{options}'を使用する
     user_options = [
         ('pytest-args=', 'a', 'Arguments for pytest'),
     ]
@@ -29,7 +27,7 @@ class PyTest(test_command):
 
 version = '0.1.0'
 
-# setup.py内でpytestのimportが必要
+
 setup_requires = [
     'pytest'
 ]
@@ -44,7 +42,6 @@ setup(
     setup_requires=setup_requires,
     ## install_requires=install_requires,
     tests_require=tests_require,
-    # 'test'を「Pytestを実行するコマンド」と紐付ける
     cmdclass={'test': PyTest},
     test_suite='test'
 )

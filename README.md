@@ -1,15 +1,20 @@
 # S&P500 predict
 
-### daily stock [Up/Down] predict by LSTM
+### daily stock [Up/Down] predict by Machine Learning
  
-* env: anaconda3 + Keras(tensorflow)
 * data source   
-  * S&P500 symbols list
-    * from http://data.okfn.org/data/core/s-and-p-500-companies#data
-  * S&P500 stcoks data (from yahoo finance)
-    * daily ['Open', 'High', 'Low', 'Close', 'Volume', 'Adj Close'] values
-* setup
-  * initial_setup/setup.sh
+  * America stocks (S&P500 component)
+    * symbols: http://data.okfn.org/data/core/s-and-p-500-companies#data
+    * values: yahoo finance
+  * Japan stocks (Nikkei225 component)
+    * symbols: http://swing-trade.net/nk225itiran
+    * values: yahoo finance
+  * Foreign Exchange(experimental)
+    * values: oanda
 * analysis method
-  * progress..
-  
+  * linear regression(for compare)
+  * feed forward network
+* usage example
+  * please see jupyter notebooks
+    * [linear regression](https://github.com/sablet/algo_trade/blob/master/notebooks/inference.ipynb)
+    * [data-describe](https://github.com/sablet/algo_trade/blob/master/notebooks/data-describe-and-learning-model.ipynb)

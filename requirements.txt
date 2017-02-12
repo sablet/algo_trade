@@ -2,9 +2,9 @@
 numpy
 pandas
 pandas_datareader
+sklearn
 # tensorflow-gpu
 keras
-matplotlib
 
 # test
 pytest
@@ -14,11 +14,12 @@ typed-ast
 
 # evaluate
 pydot
+matplotlib
+seaborn
+scipy
 
 # utility
 ipython
-
-# documentation
-mkdocs
-mkdocs-bootswatch
-
+beautifulsoup4
+html5lib
+git+https://github.com/oanda/oandapy.git

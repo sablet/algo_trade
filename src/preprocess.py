@@ -12,7 +12,7 @@ def filter_key_nan(pd_panel, key='Adj Close'):
     return np.log(pd_panel[key].dropna(axis=1)).diff()
 
 
-def panel2get_batch(pd_panel, term_dict, key='Adj Close', feature_term=6):
+def panel2get_batch(pd_panel, term_dict, key='Adj Close', feature_term=6, filter=None):
     """
     get batch(feature space and labels)
     :param key: str
@@ -22,7 +22,14 @@ def panel2get_batch(pd_panel, term_dict, key='Adj Close', feature_term=6):
     :return: dict
     """
     df = filter_key_nan(pd_panel, key)
-    features = {key: np.array([df[:time][-feature_term:].values
+    if filter is None:
+        filtered_feature = df
+    elif 'ma' in filter.keys():
+        filtered_feature = df.rolling(filter['ma']).mean()
+    else:
+        assert False
+
+    features = {key: np.array([filtered_feature[:time][-feature_term:].values
                              for time in df[term[0]:term[1]].index])
                                for key, term in term_dict.items()}
     labels = {key: df.shift(-1)[term[0]:term[1]].values

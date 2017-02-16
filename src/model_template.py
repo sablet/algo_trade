@@ -42,8 +42,9 @@ class PlotAndEvaluate(object):
         """
         accuracy = (self.labels[data_key] * self.predicted_labels[data_key] > 0)
         print("whole accuracy is {}".format(round(float(accuracy.mean(axis=None)), 3)))
-        plt.hist(accuracy.mean(axis=1), bins=20)
-        self._save_png(save)
+        if len(accuracy.shape) > 1:
+            plt.hist(accuracy.mean(axis=1), bins=20)
+            self._save_png(save)
 
     def plot_profit(self, data_key='valid', kinds='portfolio', save=False):
         """
@@ -55,15 +56,23 @@ class PlotAndEvaluate(object):
         """
         profit = (np.e ** self.labels[data_key][1:]) ** np.sign(
             self.predicted_labels[data_key][1:])
-        print("whole profit ration is {}".format(np.around(
+        print("whole profit ratio is {}".format(np.around(
             gmean(profit, axis=None), 5
         )))
         if kinds is 'portfolio':
-            pd.DataFrame(
-                np.multiply.accumulate(profit.mean(axis=1)),
-                index=self.terms[data_key][1:],
-                columns=[kinds]
-                ).plot()
+            if len(profit.shape) > 1:
+                pd.DataFrame(
+                    np.multiply.accumulate(profit.mean(axis=1)),
+                    index=self.terms[data_key][1:],
+                    columns=[kinds]
+                    ).plot()
+            else:
+                print(profit)
+                pd.DataFrame(
+                    np.multiply.accumulate(profit),
+                    index=self.terms[data_key][1:],
+                    columns=[kinds]
+                    ).plot()
         self._save_png(save)
 
 

@@ -6,7 +6,7 @@ from src.utility import np3to2
 
 class LinearModel(ModelTemplate):
     def __init__(self, features, labels, terms):
-        super().__init__(features, labels, terms, feature_1dim=True)
+        super().__init__(features, labels, terms)
         self.model = LinearRegression()
     
     def inference(self):

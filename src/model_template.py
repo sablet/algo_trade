@@ -71,7 +71,7 @@ class ModelTemplate(PlotAndEvaluate):
     """
     predict by linear model
     """
-    def __init__(self, features, labels, terms, feature_1dim=False):
+    def __init__(self, features, labels, terms):
         """
         predict and evaluate from features amd labels
         :param features: dict
@@ -82,12 +82,7 @@ class ModelTemplate(PlotAndEvaluate):
         self.terms = terms
         self.labels = labels
         self.predicted_labels = None
-        if feature_1dim is True:
-            self.features = {}
-            for key in features.keys():
-                self.features[key] = np3to2(features[key])
-        else:
-            self.features = features
+        self.features = features
 
     def predict_all(self, verbose=None):
         if verbose is None:

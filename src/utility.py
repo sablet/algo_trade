@@ -4,18 +4,23 @@ import os
 import subprocess
 
 
-def np1(arr):
-    if type(arr) in [pandas.Series, pandas.DataFrame, pandas.Panel]:
-        return arr.values.reshape(np.prod(arr.values.shape))
-    elif type(arr) is np.ndarray:
-        return arr.reshape(np.prod(arr.shape))
+def np1(data):
+    if type(data) in [pandas.Series, pandas.DataFrame, pandas.Panel]:
+        return data.values.reshape(np.prod(data.values.shape))
+    elif type(data) is np.ndarray:
+        return data.reshape(np.prod(data.shape))
+    elif type(data) is dict:
+        return {key: val.reshape(np.prod(val.shape)) for key, val in data.items()}
     assert False
 
 
-def np3to2(arr):
-    if type(arr) is np.ndarray:
-        shape = arr.shape
-        return arr.reshape(shape[0], shape[1] * shape[2])
+def np3to2(data):
+    if type(data) is np.ndarray:
+        shape = data.shape
+        return data.reshape(shape[0], shape[1] * shape[2])
+    elif type(data) is dict:
+        return {key: val.reshape(val.shape[0], val.shape[1] * val.shape[2])
+                for key, val in data.items()}
     assert False
 
 

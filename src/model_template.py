@@ -19,20 +19,6 @@ class PlotAndEvaluate(object):
                     extract_stack()[-2][-2].replace("plot_", "") + ".png"
                 ))
 
-    def plot_learning_curve(self, later=0, save=False):
-        """
-        get learning curve and plot
-        axis=0: time sries index
-        axis=1: enterprise kinds index
-        :param later: int
-        :param save:
-        :return: None
-        """
-        if type(later) is int:
-            pd.DataFrame.from_dict(self.history.history)[
-            (len(self.history.history) // 2):].plot()
-            self._save_png(save)
-
     def plot_direction_accuracy(self, data_key='valid', save=False):
         """
         evaluate predicted direction accuracy and plot

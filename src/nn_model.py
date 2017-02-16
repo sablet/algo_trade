@@ -88,3 +88,17 @@ class NnModel(ModelTemplate):
                 get_out_path(
                     self.kinds + "_model.h5"
                 ))
+
+    def plot_learning_curve(self, later=0, save=False):
+        """
+        get learning curve and plot
+        axis=0: time sries index
+        axis=1: enterprise kinds index
+        :param later: int
+        :param save:
+        :return: None
+        """
+        if type(later) is int:
+            pd.DataFrame.from_dict(self.history.history)[
+            (len(self.history.history) // 2):].plot()
+            self._save_png(save)

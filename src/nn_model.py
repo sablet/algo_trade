@@ -89,6 +89,11 @@ class NnModel(ModelTemplate):
                     self.kinds + "_model.h5"
                 ))
 
+    def predict_all(self):
+        self.predicted_labels = {key: self.model.predict(
+            self.features[key], verbose=0
+        ) for key in self.features.keys()}
+
     def plot_learning_curve(self, later=0, save=False):
         """
         get learning curve and plot

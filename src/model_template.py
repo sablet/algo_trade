@@ -53,7 +53,6 @@ class PlotAndEvaluate(object):
                     columns=[kinds]
                     ).plot()
             else:
-                print(profit)
                 pd.DataFrame(
                     np.multiply.accumulate(profit),
                     index=self.terms[data_key][1:],
@@ -74,17 +73,7 @@ class ModelTemplate(PlotAndEvaluate):
         """
         for asserted_value in [features, labels, terms]:
             assert set(asserted_value.keys()) == {'train', 'valid', 'test'}
-        self.terms = terms
-        self.labels = labels
-        self.predicted_labels = None
         self.features = features
-
-    def predict_all(self, verbose=None):
-        if verbose is None:
-            self.predicted_labels = {key: self.model.predict(
-                self.features[key]
-            ) for key in self.features.keys()}
-        else:
-            self.predicted_labels = {key: self.model.predict(
-                self.features[key], verbose=0
-            ) for key in self.features.keys()}
+        self.labels = labels
+        self.terms = terms
+        self.predicted_labels = None

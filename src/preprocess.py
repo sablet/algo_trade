@@ -1,16 +1,20 @@
 from __future__ import print_function
 import numpy as np
 from sklearn.decomposition import PCA, FastICA
+import pandas as pd
 
 
-def filter_key_nan(pd_panel, key='Adj Close'):
+def filter_key_nan(pd_obj, key='Adj Close'):
     """
     daily value filtering(key, drop Nan, Change rate
-    :param pd_panel: pandas.Panel
+    :param pd_obj: pandas.Panel
     :param key: str
     :return: pandas.DataFrame
     """
-    return np.log(pd_panel[key].dropna(axis=1)).diff()
+    if type(pd_obj) is pd.Panel:
+        return np.log(pd_obj[key].dropna(axis=1)).diff()
+    elif type(pd_obj) is pd.DataFrame:
+        return np.log(pd_obj[key]).diff()
 
 
 def panel2get_batch(pd_panel, term_dict, key='Adj Close', feature_term=6):

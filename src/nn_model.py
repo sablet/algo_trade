@@ -3,10 +3,11 @@ import os
 from keras.layers import LSTM, Conv1D
 from keras.layers.core import Dense
 from keras.models import Sequential, load_model
-from keras.optimizers import Nadam
+from keras.optimizers import SGD
 from src.model_template import ModelTemplate
 from src.utility import get_out_path, np3to2
 import pytest
+import pandas as pd
 
 NN_TYPE = ['FFNN', 'LSTM', 'CNN']
 
@@ -17,8 +18,13 @@ class NnModel(ModelTemplate):
     """
     def __init__(self, features, labels, terms, kinds=NN_TYPE[0], model_path=None):
         assert kinds in NN_TYPE
-        self.n_data, self.n_feature, self.n_label = features['train'].shape
-        super().__init__(features, labels, terms, feature_1dim=(kinds in NN_TYPE[:1]))
+        if len(features['train'].shape) is 3:
+            self.n_data, self.n_feature, self.n_label = features['train'].shape
+        else:
+            self.n_data, self.n_feature = features['train'].shape
+            self.n_label = 1
+
+        super().__init__(features, labels, terms)
         if model_path is not None:
             assert os.path.exists(model_path)
             self.model = load_model(model_path)
@@ -35,7 +41,8 @@ class NnModel(ModelTemplate):
         self._characteristic_layer_construct(topology_arr)
         self.model.compile(
             loss='mse',
-            optimizer=Nadam()
+            optimizer='nadam'
+            # optimizer=SGD(lr=1e-2, momentum=0.9)
         )
         self.model.summary()
 
@@ -48,9 +55,7 @@ class NnModel(ModelTemplate):
             ))
             for n_unit in topology_arr[1:]:
                 self.model.add(Dense(
-                    n_unit,
-                    activation='relu'
-                ))
+                    n_unit))
             self.model.add(Dense(self.n_label))
         elif self.kinds is NN_TYPE[1]:
             self.model.add(LSTM(
@@ -82,7 +87,7 @@ class NnModel(ModelTemplate):
             verbose=verbose,
             validation_data=(self.features['valid'], self.labels['valid'])
         )
-        self.predict_all(verbose=0)
+        self.predict_all()
         if save is True:
             self.model.save(
                 get_out_path(
